@@ -1,15 +1,44 @@
 package mr
 
-import "log"
-import "net"
-import "os"
-import "net/rpc"
-import "net/http"
+import (
+	"log"
+	"net"
+	"net/http"
+	"net/rpc"
+	"os"
+)
 
+// worker = processing
+// start the time out check for processing
+// connects to server and says its done
+
+// 9.9999998 s
+// 10.00000000001 s
+
+// we may need locks later
+type MapJob struct {
+	// file 
+	// bool - isDone
+}
+
+type ReducerJob struct {
+	// file
+	// bool - isDone
+}
+
+type Worker struct {
+	// job - Job struct
+	// workerState - 0, 1, 2 done, processing, unstarted
+	// lock - go data structure
+}
 
 type Coordinator struct {
-	// Your definitions here.
+	// queue of mapJobs
+	// queue of reducerJobs
+	// hashmap of Workers
 
+	// int - nreduce
+	// string - sockname
 }
 
 // Your code here -- RPC handlers for the worker to call.
