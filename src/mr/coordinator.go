@@ -7,6 +7,7 @@ import (
 	"net/rpc"
 	"os"
 	"sync"
+	"time"
 )
 
 // worker = processing
@@ -48,6 +49,8 @@ type WorkerMeta struct {
 	workerState WorkerState
 	// lock - go data structure
 	mu sync.Mutex
+	// create a timer data 
+	CreatedAt time.Time
 }
 
 type Coordinator struct {
@@ -96,10 +99,13 @@ func (c *Coordinator) Done() bool {
 // main/mrcoordinator.go calls this function.
 // nReduce is the number of reduce tasks to use.
 func MakeCoordinator(sockname string, files []string, nReduce int) *Coordinator {
-	c := Coordinator{}
-
-	// Your code here.
-
+	c := Coordinator{
+		mapJobQueue: make(chan Job, nReduce), // create buffer of length nReduce
+		reduceJobQueue: make(chan Job, nReduce), // create buffer of length nReduce
+		workerMap: make(map[int]WorkerMeta), 
+		nreduce: nReduce,
+		sockname: sockname,
+	}
 
 	c.server(sockname)
 	return &c
