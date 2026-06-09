@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/rpc"
 	"os"
+	"sync"
 )
 
 // worker = processing
@@ -16,29 +17,50 @@ import (
 // 10.00000000001 s
 
 // we may need locks later
-type MapJob struct {
-	// file 
-	// bool - isDone
-}
 
-type ReducerJob struct {
+
+type WorkerType int
+const (
+    MapJob WorkerType = iota 
+	ReducerJob
+)
+
+type Job struct {
 	// file
+	file string
 	// bool - isDone
+	isDone bool
+	// type of job
+	workerType WorkerType
 }
 
-type Worker struct {
+type WorkerState int
+const (
+    StatusDone WorkerState = iota 
+    StatusProcessing
+    StatusUnbegun
+)
+
+type WorkerMeta struct {
 	// job - Job struct
+	job Job
 	// workerState - 0, 1, 2 done, processing, unstarted
+	workerState WorkerState
 	// lock - go data structure
+	mu sync.Mutex
 }
 
 type Coordinator struct {
 	// queue of mapJobs
+	mapJobQueue chan Job
 	// queue of reducerJobs
+	reduceJobQueue chan Job
 	// hashmap of Workers
-
+	workerMap map[string]int
 	// int - nreduce
+	nreduce int
 	// string - sockname
+	sockname string
 }
 
 // Your code here -- RPC handlers for the worker to call.
