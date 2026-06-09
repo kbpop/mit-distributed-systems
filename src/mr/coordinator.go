@@ -56,7 +56,7 @@ type Coordinator struct {
 	// queue of reducerJobs
 	reduceJobQueue chan Job
 	// hashmap of Workers
-	workerMap map[string]int
+	workerMap map[int]WorkerMeta
 	// int - nreduce
 	nreduce int
 	// string - sockname
