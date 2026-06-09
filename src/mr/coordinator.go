@@ -50,7 +50,7 @@ type WorkerMeta struct {
 	// lock - go data structure
 	mu sync.Mutex
 	// create a timer data 
-	CreatedAt time.Time
+	prevTime time.Time
 }
 
 type Coordinator struct {
@@ -76,7 +76,6 @@ func (c *Coordinator) Example(args *ExampleArgs, reply *ExampleReply) error {
 	return nil
 }
 
-
 // start a thread that listens for RPCs from worker.go
 func (c *Coordinator) server(sockname string) {
 	rpc.Register(c)
@@ -95,6 +94,41 @@ func (c *Coordinator) Done() bool {
 	return len(c.mapJobQueue) == 0 && len(c.reduceJobQueue) == 0
 }
 
+// function for creating a map job
+func CreateMapJob(file string) Job {
+	return Job{
+		file: file,
+		isDone: false,
+		workerType: MapJob,
+	}
+}
+
+// function for creating a reduce job
+func CreateReduceJob(file string) Job {
+	return Job{
+		file: file,
+		isDone: false,
+		workerType: ReducerJob,
+	}
+}
+
+// function for adding function to appropriate queue
+// 		-> use if statement on the job to assign to appropriate queue
+func (c *Coordinator) RouteJob(job Job) {
+	// route to reducer Job queue OR map job queue
+	if(job.workerType == ReducerJob){
+		c.reduceJobQueue <- job
+	} else if (job.workerType == MapJob ){
+		c.mapJobQueue <- job
+	}
+}
+
+// createBackgroundTimeout
+func (c *Coordinator) CreateBackgroundTimeout(){
+	// create timer and set sleep
+	// call clean up workerMap timeout and put back on the queue
+}
+
 // create a Coordinator.
 // main/mrcoordinator.go calls this function.
 // nReduce is the number of reduce tasks to use.
@@ -106,6 +140,8 @@ func MakeCoordinator(sockname string, files []string, nReduce int) *Coordinator 
 		nreduce: nReduce,
 		sockname: sockname,
 	}
+
+	// use the files variable to create the mapJobs? 
 
 	c.server(sockname)
 	return &c
