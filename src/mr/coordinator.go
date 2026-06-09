@@ -129,15 +129,22 @@ func (c *Coordinator) CreateBackgroundTimeout(){
 	// call clean up workerMap timeout and put back on the queue
 }
 
-// function that is called when worker requests for job
-func (c *Coordinator) AssignJobToWorker(){
-
-}
+// function to find any time out
+// instantiate cur time at the beginning of the function
+// call ResetWorker if any timeouts are found
+func (c *Coordinator) FindTimeOuts(){}
 
 // function to 
 // 1) Put current Job back on queue, 
 // 2) Reset worker state + prevTime
+// lock the job to worker
 func (c *Coordinator) ResetWorker(){
+
+}
+
+// function that is called when worker requests for job
+// lock the job to worker
+func (c *Coordinator) AssignJobToWorker(){
 
 }
 
@@ -153,7 +160,8 @@ func MakeCoordinator(sockname string, files []string, nReduce int) *Coordinator 
 		sockname: sockname,
 	}
 
-	// use the files variable to create the mapJobs? 
+	// create all map jobs, don't continue until all of are done 
+	// create all reducer jobs, continue until all are done
 
 	c.server(sockname)
 	return &c
