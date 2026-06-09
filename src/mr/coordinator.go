@@ -5,10 +5,53 @@ import "net"
 import "os"
 import "net/rpc"
 import "net/http"
+import "sync"
+import "time"
 
+type WorkerType int // setting the types of jobs enum
+const (
+    MapJob WorkerType = iota // 0
+	ReducerJob // 1
+)
+
+type Job struct {
+	fileName string
+	isDone bool
+	// type of job : MapJob or ReduceJob
+	workerType WorkerType
+
+	jobId int // this would be the identifier for the workerMap
+}
+
+type WorkerState int // setting the worker states
+const (
+    StatusDone WorkerState = iota // 0
+    StatusProcessing // 1
+    StatusUnbegun // 2
+)
+
+type WorkerMeta struct {
+	job *Job
+	// workerState - 0, 1, 2 done, processing, unbegun --> StatusDone, StatusProcessing, StatusUnbegun
+	workerState WorkerState
+	// lock for each worker
+	lock sync.Mutex
+	// init worker start time so then we can later check worker.currTime or smth
+	StartTime time.Time
+}
 
 type Coordinator struct {
-	// Your definitions here.
+
+	nReduce int // number of reduce tasks
+	
+	mapJobQueue chan *Job 
+	reduceJobQueue chan *Job
+
+	workerMap map[int]*WorkerMeta // this the main thing to "coordinate" *** need to think on the key for the map
+															/* the key should be a "job id"
+															   based off of Job.jobId  */
+
+	sockName string
 
 }
 
