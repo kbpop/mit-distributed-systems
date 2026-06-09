@@ -43,7 +43,7 @@ const (
 
 type WorkerMeta struct {
 	// job - Job struct
-	job Job
+	job *Job
 	// workerState - 0, 1, 2 done, processing, unstarted
 	workerState WorkerState
 	// lock - go data structure
@@ -89,12 +89,7 @@ func (c *Coordinator) server(sockname string) {
 // main/mrcoordinator.go calls Done() periodically to find out
 // if the entire job has finished.
 func (c *Coordinator) Done() bool {
-	ret := false
-
-	// Your code here.
-
-
-	return ret
+	return len(c.mapJobQueue) == 0 && len(c.reduceJobQueue) == 0
 }
 
 // create a Coordinator.
