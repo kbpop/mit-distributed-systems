@@ -1,6 +1,7 @@
 package mr
 
 import (
+	"fmt"
 	"log"
 	"net"
 	"net/http"
@@ -116,10 +117,13 @@ func CreateReduceJob(file string) Job {
 // 		-> use if statement on the job to assign to appropriate queue
 func (c *Coordinator) RouteJob(job Job) {
 	// route to reducer Job queue OR map job queue
-	if(job.workerType == ReducerJob){
+	switch job.workerType{
+	case ReducerJob:
 		c.reduceJobQueue <- job
-	} else if (job.workerType == MapJob ){
+	case MapJob:
 		c.mapJobQueue <- job
+	default:
+		fmt.Println("Invalid state on job.")
 	}
 }
 
