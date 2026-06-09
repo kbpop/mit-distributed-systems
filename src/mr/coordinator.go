@@ -129,6 +129,18 @@ func (c *Coordinator) CreateBackgroundTimeout(){
 	// call clean up workerMap timeout and put back on the queue
 }
 
+// function that is called when worker requests for job
+func (c *Coordinator) AssignJobToWorker(){
+
+}
+
+// function to 
+// 1) Put current Job back on queue, 
+// 2) Reset worker state + prevTime
+func (c *Coordinator) ResetWorker(){
+
+}
+
 // create a Coordinator.
 // main/mrcoordinator.go calls this function.
 // nReduce is the number of reduce tasks to use.
